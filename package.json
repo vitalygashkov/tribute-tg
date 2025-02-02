@@ -1,6 +1,6 @@
 {
   "name": "tribute-tg",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Unofficial API client for Tribute Telegram Bot",
   "main": "./dist/tribute.js",
   "types": "./dist/tribute.d.ts",
