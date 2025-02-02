@@ -1,6 +1,6 @@
 {
   "name": "tribute-tg",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Tribute API client for Telegram",
   "main": "./dist/tribute.js",
   "types": "./dist/tribute.d.ts",
@@ -15,7 +15,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup tribute.ts --target node20 --format esm,cjs --dts --clean"
+    "build": "tsup tribute.ts --target node20 --format esm,cjs --dts --clean",
+    "prepublishOnly": "npm run build"
   },
   "homepage": "https://tribute.tg/",
   "repository": {
