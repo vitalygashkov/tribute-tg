@@ -1,0 +1,30 @@
+export type Member = {
+  activatedAt: number;
+  activePeriod: {
+    id: number;
+    period: string;
+    amount: number;
+    firstTimeDiscountEnabled: boolean;
+    firstTimeDiscountPercent: number;
+    cancellationDiscountEnabled: boolean;
+    cancellationDiscountPercent: number;
+    expiresAt: number;
+  };
+  cancellationDiscountPercent: number;
+  currency: 'rub' | 'eur';
+  expiresAt: number;
+  firstPeriodDiscountPercent: number;
+  id: number;
+  isDeleted: boolean;
+  isDonate: boolean;
+  isExpired: boolean;
+  migrated: boolean;
+  paymentMethod: 'smart_glocal';
+  period: 'monthly';
+  price: number;
+  status: 'active';
+  subscriptionId: number;
+  subscriptionPeriod: string;
+  subscriptionPeriodId: number;
+  userId: number;
+};
