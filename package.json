@@ -1,7 +1,7 @@
 {
   "name": "tribute-tg",
   "version": "0.0.2",
-  "description": "Tribute API client for Telegram",
+  "description": "Unofficial API client for Tribute Telegram Bot",
   "main": "./dist/tribute.js",
   "types": "./dist/tribute.d.ts",
   "exports": {
@@ -18,7 +18,7 @@
     "build": "tsup tribute.ts --target node20 --format esm,cjs --dts --clean",
     "prepublishOnly": "npm run build"
   },
-  "homepage": "https://tribute.tg/",
+  "homepage": "https://tribute.tg",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vitalygashkov/tribute-tg.git"
@@ -26,7 +26,8 @@
   "keywords": [
     "tribute",
     "telegram",
-    "donate"
+    "donate",
+    "monetization"
   ],
   "bugs": {
     "url": "https://github.com/vitalygashkov/tribute-tg/issues",
