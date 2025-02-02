@@ -17,7 +17,7 @@ npm i tribute-tg
 ```js
 import { Tribute } from 'tribute-tg';
 
-const TOKEN = 'TG_AUTH_TOKEN';
+const TOKEN = 'TG_AUTH_TOKEN'; // Use your token here
 
 const tribute = new Tribute(TOKEN);
 
