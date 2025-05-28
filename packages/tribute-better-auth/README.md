@@ -41,7 +41,6 @@ const auth = betterAuth({
   plugins: [
     tribute({
       client: tributeClient,
-      createCustomerOnSignUp: true,
       use: [
         checkout({
           subscriptions: [
