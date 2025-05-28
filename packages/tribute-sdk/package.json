@@ -26,10 +26,10 @@
   "files": [
     "dist"
   ],
-  "homepage": "https://tribute.tg",
+  "homepage": "https://wiki.tribute.tg",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vitalygashkov/tribute.git"
+    "url": "git+https://github.com/vitalygashkov/tribute-tg.git"
   },
   "keywords": [
     "tribute",
@@ -40,7 +40,7 @@
     "monetization"
   ],
   "bugs": {
-    "url": "https://github.com/vitalygashkov/tribute/issues",
+    "url": "https://github.com/vitalygashkov/tribute-tg/issues",
     "email": "vitalygashkov@vk.com"
   },
   "author": "Vitaly Gashkov <vitalygashkov@vk.com>",
