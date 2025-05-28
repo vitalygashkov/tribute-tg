@@ -52,6 +52,7 @@
   ],
   "devDependencies": {
     "@sindresorhus/tsconfig": "^7.0.0",
+    "@tribute-tg/sdk": "^0.0.1",
     "@types/node": "^22.15.23",
     "better-auth": "^1.2.8",
     "tsdown": "^0.12.4",
@@ -62,7 +63,7 @@
     "zod": "^3.25.32"
   },
   "peerDependencies": {
-    "@tribute/sdk": "^0.0.1",
+    "@tribute-tg/sdk": "^0.0.1",
     "better-auth": "^1.2.8"
   }
 }

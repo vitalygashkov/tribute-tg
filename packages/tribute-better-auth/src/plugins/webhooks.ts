@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
 import { createAuthEndpoint } from 'better-auth/api';
-import type { Tribute } from '../../../tribute-sdk/src';
+import type { Tribute } from '@tribute-tg/sdk';
 
 export const verifyHmac = (
   key: string,
