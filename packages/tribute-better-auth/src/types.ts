@@ -1,6 +1,7 @@
 import { UnionToIntersection } from 'better-auth';
 import { webhooks } from './plugins/webhooks';
 import { checkout } from './plugins/checkout';
+import type { Tribute } from '@tribute-tg/sdk';
 
 export interface Subscription {
   /**
@@ -16,3 +17,8 @@ export interface Subscription {
 export type TributePlugin = ReturnType<typeof webhooks> | ReturnType<typeof checkout>;
 
 export type TributeEndpoints = UnionToIntersection<ReturnType<TributePlugin>>;
+
+export interface TributeOptions {
+  client: Tribute;
+  use: TributePlugin[];
+}
