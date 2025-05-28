@@ -1,7 +1,7 @@
 import { APIError, createAuthEndpoint } from 'better-auth/api';
 import { z } from 'zod/v4';
+import { Tribute } from '@tribute-tg/sdk';
 import { Subscription } from '../types';
-import { Tribute } from '../../../tribute-sdk/src';
 
 export interface CheckoutOptions {
   /**
@@ -49,7 +49,11 @@ export const checkout = (checkoutOptions: CheckoutOptions) => (tribute: Tribute)
         }
 
         try {
-          const subscriptionResponse = await tribute.getSubscription(subscriptionIds[0]);
+          const id = subscriptionIds[0];
+          if (!id) {
+            throw new APIError('BAD_REQUEST', { message: 'Subscription not found' });
+          }
+          const subscriptionResponse = await tribute.getSubscription(id);
           const url = subscriptionResponse.subscription.webLink;
 
           return ctx.json({

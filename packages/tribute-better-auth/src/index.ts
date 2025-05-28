@@ -1,6 +1,6 @@
 import type { BetterAuthPlugin } from 'better-auth';
+import type { Tribute } from '@tribute-tg/sdk';
 import type { TributeEndpoints, TributePlugin } from './types';
-import type { Tribute } from '../../tribute-sdk/src';
 
 interface TributeOptions {
   client: Tribute;
