@@ -35,11 +35,14 @@ export interface WebhooksOptions {
    */
   secret: string;
   /**
-   * Webhook for subscription created
+   * A callback to run after a user has subscribed
+   * @param payload
+   * @returns
    */
   onSubscriptionCreated?: (payload: WebhookSubscriptionPayload) => Promise<void>;
   /**
-   * Webhook for subscription canceled
+   * A callback to run after a user is about to cancel their subscription
+   * @returns
    */
   onSubscriptionCanceled?: (payload: WebhookSubscriptionPayload) => Promise<void>;
   /**
@@ -62,11 +65,11 @@ export const webhooks = (webhooksOptions: WebhooksOptions) => (_tribute: Tribute
       const eventName = event.name;
 
       if (eventName === 'new_subscription') {
-        onSubscriptionCreated?.(event.payload);
+        await onSubscriptionCreated?.(event.payload);
       } else if (eventName === 'cancelled_subscription') {
-        onSubscriptionCanceled?.(event);
+        await onSubscriptionCanceled?.(event);
       }
-      onPayload?.(event.payload);
+      await onPayload?.(event.payload);
     }),
   };
 };
