@@ -58,3 +58,5 @@ export class Tribute {
     return this.request(`/subscription_member/${id}`);
   }
 }
+
+export * from './types';
