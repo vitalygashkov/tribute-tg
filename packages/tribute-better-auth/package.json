@@ -1,6 +1,6 @@
 {
   "name": "@tribute-tg/better-auth",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Tribute integration for better-auth",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
