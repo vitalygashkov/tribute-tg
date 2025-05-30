@@ -63,7 +63,7 @@
     "zod": "^3.25.32"
   },
   "peerDependencies": {
-    "@tribute-tg/sdk": "^0.0.3",
+    "@tribute-tg/sdk": "~0.0.4",
     "better-auth": "^1.2.8"
   }
 }
