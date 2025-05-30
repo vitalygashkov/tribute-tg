@@ -10,6 +10,8 @@ export interface CheckoutOptions {
   subscriptions?: Subscription[] | (() => Promise<Subscription[]>);
 }
 
+const cachedSubscriptions: Subscription[] = [];
+
 export const checkout = (checkoutOptions: CheckoutOptions) => (tribute: Tribute) => {
   return {
     checkout: createAuthEndpoint(
@@ -17,49 +19,60 @@ export const checkout = (checkoutOptions: CheckoutOptions) => (tribute: Tribute)
       {
         method: 'POST',
         body: z.object({
-          subscriptions: z.union([z.array(z.number()), z.number()]).optional(),
           slug: z.string().optional(),
+          subscriptionId: z.number().optional(),
+          period: z.string().optional(),
+          currency: z.string().optional(),
         }),
       },
       async (ctx) => {
         // const session = await getSessionFromCtx(ctx);
 
-        let subscriptionIds: number[] = [];
+        if (!ctx.body.slug && !ctx.body.subscriptionId) {
+          throw new APIError('BAD_REQUEST', {
+            message: 'Either slug or subscriptionId is required',
+          });
+        }
 
-        if (ctx.body.slug) {
+        const findFrom = (subscriptions: Subscription[]) =>
+          subscriptions.find(
+            (subscription) =>
+              (!ctx.body.subscriptionId || subscription.subscriptionId === ctx.body.subscriptionId) &&
+              (!ctx.body.slug || subscription.slug === ctx.body.slug) &&
+              (!ctx.body.period || subscription.period === ctx.body.period) &&
+              (!ctx.body.currency || subscription.currency === ctx.body.currency)
+          );
+
+        let subscription = findFrom(cachedSubscriptions);
+
+        if (!subscription) {
           const resolvedSubscriptions = await (typeof checkoutOptions.subscriptions === 'function'
             ? checkoutOptions.subscriptions()
             : checkoutOptions.subscriptions);
+          const resolvedSubscription = findFrom(resolvedSubscriptions ?? []);
+          if (resolvedSubscription) subscription = resolvedSubscription;
+        }
 
-          const subscriptionId = resolvedSubscriptions?.find(
-            (product) => product.slug === ctx.body.slug
-          )?.subscriptionId;
-
-          if (!subscriptionId) {
-            throw new APIError('BAD_REQUEST', {
-              message: 'Subscription not found',
-            });
-          }
-
-          subscriptionIds = [subscriptionId];
-        } else {
-          subscriptionIds = Array.isArray(ctx.body.subscriptions)
-            ? ctx.body.subscriptions.filter((id) => id !== undefined)
-            : [ctx.body.subscriptions].filter((id) => id !== undefined);
+        if (!subscription) {
+          throw new APIError('BAD_REQUEST', {
+            message: 'Subscription not found',
+          });
         }
 
         try {
-          const id = subscriptionIds[0];
-          if (!id) {
-            throw new APIError('BAD_REQUEST', { message: 'Subscription not found' });
-          }
-          const subscriptionResponse = await tribute.getSubscription(id);
+          const cachedLink = subscription.redirectUrl?.trim();
+          if (cachedLink) return ctx.json({ url: cachedLink, redirect: true });
+          ctx.context.logger.info(`Fetching subscription link for ${subscription.subscriptionId}`);
+          const subscriptionResponse = await tribute.getSubscription(subscription.subscriptionId);
           const url = subscriptionResponse.subscription.webLink;
-
-          return ctx.json({
-            url: url,
-            redirect: true,
-          });
+          // Cache link (and other subscription info) in memory to reduce Tribute API calls
+          const index = cachedSubscriptions.findIndex((s) => s.subscriptionId === subscription.subscriptionId);
+          if (index === -1) {
+            cachedSubscriptions.push({ ...subscription, redirectUrl: url });
+          } else {
+            cachedSubscriptions[index] = { ...subscription, redirectUrl: url };
+          }
+          return ctx.json({ url, redirect: true });
         } catch (e: unknown) {
           if (e instanceof Error) {
             ctx.context.logger.error(`Tribute checkout creation failed. Error: ${e.message}`);

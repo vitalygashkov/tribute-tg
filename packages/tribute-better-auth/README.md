@@ -132,7 +132,7 @@ When checkouts are enabled, you're able to initialize Checkout Sessions using th
 ```typescript
 await authClient.checkout({
   // Any Tribute Subscription ID can be passed here
-  subscriptions: [123456],
+  subscriptionId: 123456,
   // Or, if you setup "subscriptions" in the Checkout Config, you can pass the slug
   slug: 'pro',
 });
