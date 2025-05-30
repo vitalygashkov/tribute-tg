@@ -35,14 +35,14 @@ export interface ChannelSubscription {
   isDonate: boolean;
   migrated: boolean;
   name: string;
+  periods: SubscriptionPeriod[];
+  userId: number;
+  trialPeriod: string;
+  privateChannelInviteLink: string;
+  publicChannelInviteLink: string;
 }
 
 export interface Subscription extends ChannelSubscription {
-  userId: number;
-  trialPeriod: string;
-  periods: SubscriptionPeriod[];
-  privateChannelInviteLink: string;
-  publicChannelInviteLink: string;
   webLink: string;
 }
 
