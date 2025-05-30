@@ -14,15 +14,15 @@ export const subscriptions = {
         required: true,
       },
       tributeUserId: {
-        type: 'string',
+        type: 'number',
         required: true,
       },
       telegramUserId: {
-        type: 'string',
+        type: 'number',
         required: true,
       },
       channelId: {
-        type: 'string',
+        type: 'number',
         required: true,
       },
       period: {
