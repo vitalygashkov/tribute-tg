@@ -1,4 +1,6 @@
-import { AuthPluginSchema } from 'better-auth';
+import { mergeSchema } from 'better-auth/db';
+import type { AuthPluginSchema } from 'better-auth';
+import type { TributeOptions } from './types';
 
 export const subscriptions = {
   subscription: {
@@ -28,7 +30,11 @@ export const subscriptions = {
         required: true,
       },
       price: {
-        type: 'string',
+        type: 'number',
+        required: true,
+      },
+      amount: {
+        type: 'number',
         required: true,
       },
       currency: {
@@ -57,3 +63,13 @@ export const user = {
     },
   },
 } satisfies AuthPluginSchema;
+
+export const getSchema = (options: TributeOptions) => {
+  return mergeSchema(
+    {
+      ...subscriptions,
+      ...user,
+    },
+    options.schema
+  );
+};

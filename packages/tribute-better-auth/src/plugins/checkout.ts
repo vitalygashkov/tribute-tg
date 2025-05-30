@@ -1,16 +1,16 @@
 import { APIError, createAuthEndpoint } from 'better-auth/api';
 import { z } from 'zod/v4';
 import { Tribute } from '@tribute-tg/sdk';
-import { Subscription } from '../types';
+import { CheckoutSubscription } from '../types';
 
 export interface CheckoutOptions {
   /**
    * Optional list of slug -> subscriptionId mappings for easy slug checkouts
    */
-  subscriptions?: Subscription[] | (() => Promise<Subscription[]>);
+  subscriptions?: CheckoutSubscription[] | (() => Promise<CheckoutSubscription[]>);
 }
 
-const cachedSubscriptions: Subscription[] = [];
+const cachedSubscriptions: CheckoutSubscription[] = [];
 
 export const checkout = (checkoutOptions: CheckoutOptions) => (tribute: Tribute) => {
   return {
@@ -19,10 +19,10 @@ export const checkout = (checkoutOptions: CheckoutOptions) => (tribute: Tribute)
       {
         method: 'POST',
         body: z.object({
-          slug: z.string().optional(),
           subscriptionId: z.number().optional(),
           period: z.string().optional(),
           currency: z.string().optional(),
+          slug: z.string().optional(),
         }),
       },
       async (ctx) => {
@@ -34,7 +34,7 @@ export const checkout = (checkoutOptions: CheckoutOptions) => (tribute: Tribute)
           });
         }
 
-        const findFrom = (subscriptions: Subscription[]) =>
+        const findFrom = (subscriptions: CheckoutSubscription[]) =>
           subscriptions.find(
             (subscription) =>
               (!ctx.body.subscriptionId || subscription.subscriptionId === ctx.body.subscriptionId) &&

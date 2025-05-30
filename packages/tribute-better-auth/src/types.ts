@@ -1,10 +1,11 @@
-import { InferOptionSchema, UnionToIntersection } from 'better-auth';
-import type { Currency, Tribute } from '@tribute-tg/sdk';
+import type { InferOptionSchema, UnionToIntersection } from 'better-auth';
+import type { Currency, Period, Tribute } from '@tribute-tg/sdk';
 import { webhooks } from './plugins/webhooks';
 import { checkout } from './plugins/checkout';
+import { portal } from './plugins/portal';
 import { subscriptions, user } from './schema';
 
-export interface Subscription {
+export interface CheckoutSubscription {
   /**
    * Subscription Id from Tribute Subscription
    */
@@ -21,7 +22,22 @@ export interface Subscription {
   redirectUrl?: string;
 }
 
-export type TributePlugin = ReturnType<typeof webhooks> | ReturnType<typeof checkout>;
+export interface Subscription {
+  tributeSubscriptionId: number;
+  tributeSubscriptionName: string;
+  tributeUserId: number;
+  telegramUserId: number;
+  userId: string;
+  channelId: number;
+  period: Period;
+  price: number;
+  amount: number;
+  currency: Currency;
+  expiresAt: string;
+  status: string;
+}
+
+export type TributePlugin = ReturnType<typeof portal> | ReturnType<typeof webhooks> | ReturnType<typeof checkout>;
 
 export type TributeEndpoints = UnionToIntersection<ReturnType<TributePlugin>>;
 

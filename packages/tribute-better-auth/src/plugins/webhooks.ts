@@ -1,5 +1,8 @@
+import { z } from 'zod/v4';
 import { createAuthEndpoint } from 'better-auth/api';
-import type { Tribute } from '@tribute-tg/sdk';
+import type { Account } from 'better-auth';
+import type { Tribute, WebhookSubscriptionPayload } from '@tribute-tg/sdk';
+import type { Subscription } from '../types';
 
 export const verifyHmac = async (key: string, data: string, expectedHmac: string) => {
   const encoder = new TextEncoder();
@@ -12,22 +15,6 @@ export const verifyHmac = async (key: string, data: string, expectedHmac: string
     .join('');
   return computedHmac === expectedHmac;
 };
-
-interface WebhookSubscriptionPayload {
-  subscription_name: string;
-  subscription_id: number;
-  period_id: number;
-  period: 'weekly' | 'monthly' | 'yearly';
-  price: number;
-  amount: number;
-  currency: 'rub' | 'eur';
-  user_id: number;
-  telegram_user_id: number;
-  web_app_link: string;
-  channel_id: number;
-  channel_name: string;
-  expires_at: string;
-}
 
 export interface WebhooksOptions {
   /**
@@ -53,23 +40,82 @@ export interface WebhooksOptions {
 
 export const webhooks = (webhooksOptions: WebhooksOptions) => (_tribute: Tribute) => {
   return {
-    tributeWebhooks: createAuthEndpoint('/tribute/webhooks', { method: 'POST' }, async (ctx) => {
-      const signature = ctx.headers?.get('Trbt-Signature');
-      if (!signature) return ctx.error(401);
-      const isVerified = verifyHmac(webhooksOptions.secret, JSON.stringify(ctx.body), signature);
-      if (!isVerified) return ctx.error(401);
+    tributeWebhooks: createAuthEndpoint(
+      '/tribute/webhooks',
+      {
+        method: 'POST',
+        body: z.object({
+          name: z.string(),
+          created_at: z.string(),
+          sent_at: z.string(),
+          payload: z.any(),
+        }),
+      },
+      async (ctx) => {
+        const signature = ctx.headers?.get('Trbt-Signature');
+        if (!signature) return ctx.error(401);
+        const isVerified = verifyHmac(webhooksOptions.secret, JSON.stringify(ctx.body), signature);
+        if (!isVerified) return ctx.error(401);
 
-      const { onSubscriptionCreated, onSubscriptionCanceled, onPayload } = webhooksOptions;
+        const { onSubscriptionCreated, onSubscriptionCanceled, onPayload } = webhooksOptions;
 
-      const event = ctx.body;
-      const eventName = event.name;
+        const event = ctx.body;
+        const eventName = event.name;
+        const payload = event.payload;
 
-      if (eventName === 'new_subscription') {
-        await onSubscriptionCreated?.(event.payload);
-      } else if (eventName === 'cancelled_subscription') {
-        await onSubscriptionCanceled?.(event);
+        if (eventName === 'new_subscription') {
+          await onSubscriptionCreated?.(event.payload);
+
+          const telegramUserId = payload.telegram_user_id;
+          const account = await ctx.context.adapter.findOne<Account>({
+            model: 'account',
+            where: [
+              { field: 'accountId', value: telegramUserId },
+              { field: 'providerId', value: 'telegram' },
+            ],
+          });
+
+          if (account) {
+            const userId = account.userId;
+            const tributeUserId = payload.user_id;
+
+            await ctx.context.adapter.update({
+              model: 'user',
+              update: { tributeUserId },
+              where: [{ field: 'id', value: userId }],
+            });
+
+            await ctx.context.adapter.create<Subscription>({
+              model: 'subscription',
+              data: {
+                userId,
+                telegramUserId,
+                tributeUserId: payload.user_id,
+                tributeSubscriptionId: payload.subscription_id,
+                tributeSubscriptionName: payload.subscription_name,
+                channelId: payload.channel_id,
+                period: payload.period,
+                price: payload.price / 100,
+                amount: payload.amount / 100,
+                currency: payload.currency,
+                expiresAt: payload.expires_at,
+                status: 'active',
+              },
+            });
+          }
+        } else if (eventName === 'cancelled_subscription') {
+          await onSubscriptionCanceled?.(payload);
+
+          await ctx.context.adapter.delete({
+            model: 'subscription',
+            where: [
+              { field: 'tributeSubscriptionId', value: payload.subscription_id },
+              { field: 'tributeUserId', value: payload.user_id },
+            ],
+          });
+        }
+        await onPayload?.(event);
       }
-      await onPayload?.(event.payload);
-    }),
+    ),
   };
 };
