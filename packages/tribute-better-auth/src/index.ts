@@ -8,6 +8,7 @@ export { tributeClient } from './client';
 export * from './plugins/portal';
 export * from './plugins/checkout';
 export * from './plugins/webhooks';
+export * from './types';
 
 export const tribute = (options: TributeOptions) => {
   const plugins = options.use
