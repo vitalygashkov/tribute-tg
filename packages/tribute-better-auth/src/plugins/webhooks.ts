@@ -106,8 +106,9 @@ export const webhooks = (webhooksOptions: WebhooksOptions) => (_tribute: Tribute
         } else if (eventName === 'cancelled_subscription') {
           await onSubscriptionCanceled?.(payload);
 
-          await ctx.context.adapter.delete({
+          await ctx.context.adapter.update({
             model: 'subscription',
+            update: { status: 'cancelled' },
             where: [
               { field: 'tributeSubscriptionId', value: payload.subscription_id },
               { field: 'tributeUserId', value: payload.user_id },
