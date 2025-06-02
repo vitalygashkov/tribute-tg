@@ -42,21 +42,23 @@ export const portal = () => (_tribute: Tribute) => {
         use: [sessionMiddleware],
       },
       async (ctx) => {
-        if (!ctx.context.session.user.id) {
+        if (!ctx.context.session.user.id || !ctx.context.session.user['tributeUserId']) {
           throw new APIError('BAD_REQUEST', {
             message: 'User not found',
           });
         }
 
         try {
-          const userId = ctx.context.session.user.id;
-          const activeSubscriptions = await ctx.context.adapter.findMany<Subscription>({
+          const userSubscriptions = await ctx.context.adapter.findMany<Subscription>({
             model: 'subscription',
-            where: [
-              { field: 'userId', value: userId },
-              { field: 'status', value: 'active' },
-            ],
+            where: [{ field: 'tributeUserId', value: ctx.context.session.user['tributeUserId'] }],
           });
+
+          const activeSubscriptions = userSubscriptions.filter((s) => {
+            const expiresAt = new Date(s.expiresAt);
+            return expiresAt > new Date() || s.status === 'active';
+          });
+
           const state = {
             ...ctx.context.session.user,
             activeSubscriptions,
