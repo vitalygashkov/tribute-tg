@@ -36,7 +36,7 @@ export interface Subscription {
   status: string;
 }
 
-export type TributePlugin = ReturnType<typeof subscription> | ReturnType<typeof webhooks> | ReturnType<typeof checkout>;
+export type TributePlugin = ReturnType<typeof subscription> | ReturnType<typeof webhooks>;
 
 export type TributeEndpoints = UnionToIntersection<ReturnType<TributePlugin>>;
 
