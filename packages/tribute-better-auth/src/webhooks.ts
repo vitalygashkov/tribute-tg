@@ -2,8 +2,8 @@ import { z } from 'zod';
 import { createAuthEndpoint } from 'better-auth/api';
 import type { Account } from 'better-auth';
 import type { Tribute } from '@tribute-tg/sdk';
-import type { Subscription, TributeOptions } from '../types';
-import { verifyHmac } from '../util';
+import type { Subscription, TributeOptions } from './types';
+import { verifyHmac } from './util';
 
 export const webhooks =
   (webhooksOptions: Pick<TributeOptions, 'onNewSubscription' | 'onCancelledSubscription' | 'onEvent'>) =>

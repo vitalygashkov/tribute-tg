@@ -1,8 +1,7 @@
 import type { InferOptionSchema, UnionToIntersection } from 'better-auth';
 import type { Currency, Period, Tribute, WebhookEvent, WebhookSubscriptionPayload } from '@tribute-tg/sdk';
-import { webhooks } from './plugins/webhooks';
-import { checkout } from './plugins/checkout';
-import { portal } from './plugins/portal';
+import { webhooks } from './webhooks';
+import { subscription } from './subscription';
 import { subscriptions, user } from './schema';
 
 export interface CheckoutSubscription {
@@ -37,7 +36,7 @@ export interface Subscription {
   status: string;
 }
 
-export type TributePlugin = ReturnType<typeof portal> | ReturnType<typeof webhooks> | ReturnType<typeof checkout>;
+export type TributePlugin = ReturnType<typeof subscription> | ReturnType<typeof webhooks> | ReturnType<typeof checkout>;
 
 export type TributeEndpoints = UnionToIntersection<ReturnType<TributePlugin>>;
 
