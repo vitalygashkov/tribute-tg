@@ -7,15 +7,17 @@ import type { SubscriptionPeriod, SubscriptionPeriodPayload } from './types/subs
 export class Tribute {
   private baseUrl = 'https://tribute.tg/api';
   private version = 'v4';
-  private token = '';
+  public token: string;
+  public apiKey: string;
 
-  constructor({ token }: { token: string }) {
+  constructor({ token, apiKey }: { token: string; apiKey: string }) {
     this.token = token;
+    this.apiKey = apiKey;
   }
 
   private async request<T>(route: string, body?: any, method?: string): Promise<T> {
     const response = await fetch(`${this.baseUrl}/${this.version}${route}`, {
-      headers: { Authorization: `TgAuth ${this.token}` },
+      headers: { Authorization: `TgAuth ${this.token}`, 'Api-Key': this.apiKey },
       method: method ?? (body ? 'POST' : 'GET'),
       body: body ? JSON.stringify(body) : undefined,
     });
