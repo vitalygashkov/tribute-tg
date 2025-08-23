@@ -2,6 +2,9 @@ import type { BetterAuthPlugin } from 'better-auth';
 
 import type { TributeEndpoints, TributeOptions } from './types';
 import { getSchema } from './schema';
+import { webhooks } from './plugins/webhooks';
+import { portal } from './plugins/portal';
+import { checkout } from './plugins/checkout';
 
 export { tributeClient } from './client';
 
@@ -11,8 +14,8 @@ export * from './plugins/webhooks';
 export * from './types';
 
 export const tribute = (options: TributeOptions) => {
-  const plugins = options.use
-    .map((use) => use(options.client))
+  const plugins = [webhooks(options), checkout(options), portal()]
+    .map((use) => use(options.tributeClient))
     .reduce((acc, plugin) => {
       Object.assign(acc, plugin);
       return acc;
@@ -20,9 +23,7 @@ export const tribute = (options: TributeOptions) => {
 
   return {
     id: 'tribute',
-    endpoints: {
-      ...plugins,
-    },
+    endpoints: { ...plugins },
     schema: getSchema(options),
   } satisfies BetterAuthPlugin;
 };

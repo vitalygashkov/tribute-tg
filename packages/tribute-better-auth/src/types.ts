@@ -1,5 +1,5 @@
 import type { InferOptionSchema, UnionToIntersection } from 'better-auth';
-import type { Currency, Period, Tribute } from '@tribute-tg/sdk';
+import type { Currency, Period, Tribute, WebhookEvent, WebhookSubscriptionPayload } from '@tribute-tg/sdk';
 import { webhooks } from './plugins/webhooks';
 import { checkout } from './plugins/checkout';
 import { portal } from './plugins/portal';
@@ -42,8 +42,36 @@ export type TributePlugin = ReturnType<typeof portal> | ReturnType<typeof webhoo
 export type TributeEndpoints = UnionToIntersection<ReturnType<TributePlugin>>;
 
 export interface TributeOptions {
-  client: Tribute;
-  use: TributePlugin[];
+  /**
+   * Tribute Client
+   */
+  tributeClient: Tribute;
+
+  /**
+   * A callback to run after a user has subscribed
+   * @param payload - Tribute Subscription Data
+   * @returns
+   */
+  onNewSubscription?: (payload: WebhookSubscriptionPayload) => Promise<void>;
+
+  /**
+   * A callback to run after a user is about to cancel their subscription
+   * @returns
+   */
+  onCancelledSubscription?: (payload: WebhookSubscriptionPayload) => Promise<void>;
+
+  /**
+   * A callback to run after a Tribute event is received
+   * @param event - Tribute Event
+   * @returns
+   */
+  onEvent?: (event: WebhookEvent) => Promise<void>;
+
+  /**
+   * Optional list of slug -> subscriptionId mappings for easy slug checkouts
+   */
+  subscriptions?: CheckoutSubscription[] | (() => Promise<CheckoutSubscription[]>);
+
   /**
    * Schema for the tribute plugin
    */

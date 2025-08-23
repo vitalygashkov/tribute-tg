@@ -1,18 +1,11 @@
 import { APIError, createAuthEndpoint } from 'better-auth/api';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 import { Tribute } from '@tribute-tg/sdk';
-import { CheckoutSubscription } from '../types';
-
-export interface CheckoutOptions {
-  /**
-   * Optional list of slug -> subscriptionId mappings for easy slug checkouts
-   */
-  subscriptions?: CheckoutSubscription[] | (() => Promise<CheckoutSubscription[]>);
-}
+import { CheckoutSubscription, TributeOptions } from '../types';
 
 const cachedSubscriptions: CheckoutSubscription[] = [];
 
-export const checkout = (checkoutOptions: CheckoutOptions) => (tribute: Tribute) => {
+export const checkout = (checkoutOptions: Pick<TributeOptions, 'subscriptions'>) => (tribute: Tribute) => {
   return {
     checkout: createAuthEndpoint(
       '/checkout',
