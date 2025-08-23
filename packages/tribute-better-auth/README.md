@@ -17,9 +17,12 @@ npm i better-auth @tribute-sh/better-auth @tribute-tg/sdk
 
 > Authorization token can be obtained from a network request in the web version of [Telegram](https://web.telegram.org/k/) while using the Tribute mini-app. See `Authorization` header (in the request with [tribute.tg](https://tribute.tg/) host) and copy value after `TgAuth ` prefix.
 
+> API key can be obtained from the Tribute Developers Settings page: https://wiki.tribute.tg/for-content-creators/api-documentation#how-to-get-an-api-key
+
 ```bash
 # .env
 TG_AUTH_TOKEN=...
+TRIBUTE_API_KEY=...
 ```
 
 ### Configuring BetterAuth Server
@@ -31,33 +34,26 @@ The Tribute plugin comes with a handful additional plugins which adds functional
 
 ```typescript
 import { betterAuth } from "better-auth";
-import { tribute, checkout, webhooks } from "@tribute-tg/better-auth";
+import { tribute } from "@tribute-tg/better-auth";
 import { Tribute } from "@tribute-tg/sdk";
 
-const tributeClient = new Tribute({ token: process.env.TG_AUTH_TOKEN });
+const tributeClient = new Tribute({ token: process.env.TG_AUTH_TOKEN, apiKey: process.env.TRIBUTE_API_KEY });
 
 const auth = betterAuth({
   // ... Better Auth config
   plugins: [
     tribute({
-      client: tributeClient,
-      use: [
-        checkout({
-          subscriptions: [
-            {
-              subscriptionId: 123456, // ID of Subscription from Tribute
-              slug: "pro" // Custom slug for easy reference in Checkout URL, e.g. /checkout/pro
-            }
-          ],
-        }),
-        webhooks({
-          secret: process.env.TRIBUTE_WEBHOOK_SECRET,
-          onSubscriptionCreated: (payload) => // Triggered when subscription was created
-          onSubscriptionCanceled: (payload) => // Triggered when subscription was canceled
-          ...  // Other webhook handlers
-          onPayload: (payload) => // Catch-all for all events
-        })
+      tributeClient,
+      subscriptions: [
+        {
+          subscriptionId: 123456, // ID of Subscription from Tribute
+          slug: "pro" // Custom slug for easy reference in Checkout URL, e.g. /checkout/pro
+        }
       ],
+      onNewSubscription: (payload) => // Triggered when subscription was created
+      onCancelledSubscription: (payload) => // Triggered when subscription was canceled
+      ...  // Other webhook handlers
+      onEvent: (event) => // Catch-all for all events
     })
   ]
 });
@@ -85,16 +81,14 @@ import { betterAuth } from 'better-auth';
 import { tribute, checkout, webhooks } from '@tribute-tg/better-auth';
 import { Tribute } from '@tribute-tg/sdk';
 
-const tributeClient = new Tribute({ token: process.env.TG_AUTH_TOKEN });
+const tributeClient = new Tribute({ token: process.env.TG_AUTH_TOKEN, apiKey: process.env.TRIBUTE_API_KEY });
 
 const auth = betterAuth({
   // ... Better Auth config
   plugins: [
     tribute({
-      client: tributeClient,
-      use: [
-        // This is where you add Tribute plugins
-      ],
+      tributeClient,
+      // This is where you add Tribute options
     }),
   ],
 });
@@ -102,26 +96,22 @@ const auth = betterAuth({
 
 ### Required Options
 
-- `client`: Tribute SDK client instance
+- `tributeClient`: Tribute SDK client instance
 
-## Checkout Plugin
+## Checkout
 
-To support checkouts in your app, simply pass the Checkout plugin to the use-property.
+To support checkouts in your app, simply pass the Checkout to the use-property.
 
 ```typescript
-import { tribute, checkout } from "@tribute-tg/better-auth";
+import { tribute } from "@tribute-tg/better-auth";
 
 const auth = betterAuth({
   // ... Better Auth config
   plugins: [
     tribute({
       ...
-      use: [
-        checkout({
-          // Optional field - will make it possible to pass a slug to checkout instead of Subscription ID
-          subscriptions: [ { subscriptionId: 123456, slug: "pro" } ],
-        })
-      ],
+      // Optional field - will make it possible to pass a slug to checkout instead of Subscription ID
+      subscriptions: [ { subscriptionId: 123456, slug: "pro" } ],
     })
   ]
 });
@@ -138,27 +128,22 @@ await authClient.checkout({
 });
 ```
 
-## Webhooks Plugin
+## Webhooks
 
-The Webhooks plugin can be used to capture incoming events from your monetized Telegram channels.
+The Webhooks can be used to capture incoming events from your monetized Telegram channels.
 
 ```typescript
-import { tribute, webhooks } from "@tribute-tg/better-auth";
+import { tribute } from "@tribute-tg/better-auth";
 
 const auth = betterAuth({
   // ... Better Auth config
   plugins: [
     tribute({
       ...
-      use: [
-        webhooks({
-          secret: process.env.TRIBUTE_WEBHOOK_SECRET,
-          onSubscriptionCreated: (payload) => // Triggered when subscription was created
-          onSubscriptionCanceled: (payload) => // Triggered when subscription was canceled
-          ...  // Other webhook handlers
-          onPayload: (payload) => // Catch-all for all events
-        })
-      ],
+      onNewSubscription: (payload) => // Triggered when subscription was created
+      onCancelledSubscription: (payload) => // Triggered when subscription was canceled
+      ...  // Other webhook handlers
+      onEvent: (event) => // Catch-all for all events
     })
   ]
 });
@@ -166,15 +151,15 @@ const auth = betterAuth({
 
 Configure a Webhook endpoint in your Tribute Developers Settings page. Webhook endpoint is configured at /tribute/webhooks.
 
-Add the secret to your environment.
+Add the API key to your environment.
 
 ```bash
 # .env
-TRIBUTE_WEBHOOK_SECRET=...
+TRIBUTE_API_KEY=...
 ```
 
 The plugin supports handlers for all Tribute webhook events:
 
-- `onPayload` - Catch-all handler for any incoming Webhook event
-- `onSubscriptionCreated` - Triggered when a subscription is created
-- `onSubscriptionUpdated` - Triggered when a subscription is updated
+- `onEvent` - Catch-all handler for any incoming Webhook event
+- `onNewSubscription` - Triggered when a subscription is created
+- `onCancelledSubscription` - Triggered when a subscription is updated

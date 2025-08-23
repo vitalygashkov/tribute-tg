@@ -40,9 +40,12 @@ yarn add @tribute-tg/sdk zod
 
 > Authorization token can be obtained from a network request in the web version of [Telegram](https://web.telegram.org/k/) while using the Tribute mini-app. See `Authorization` header (in the request with [tribute.tg](https://tribute.tg/) host) and copy value after `TgAuth ` prefix.
 
+> API key can be obtained from the Tribute Developers Settings page: https://wiki.tribute.tg/for-content-creators/api-documentation#how-to-get-an-api-key
+
 ```bash
 # .env
 TG_AUTH_TOKEN=...
+TRIBUTE_API_KEY=...
 ```
 
 ## SDK Example Usage
@@ -52,7 +55,7 @@ TG_AUTH_TOKEN=...
 ```typescript
 import { Tribute } from '@tribute-tg/sdk';
 
-const tribute = new Tribute({ token: process.env.TG_AUTH_TOKEN });
+const tribute = new Tribute({ token: process.env.TG_AUTH_TOKEN, apiKey: process.env.TRIBUTE_API_KEY });
 
 async function run() {
   const result = await tribute.getDashboard();
