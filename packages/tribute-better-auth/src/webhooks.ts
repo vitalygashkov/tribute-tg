@@ -39,7 +39,7 @@ export const webhooks =
             const account = await ctx.context.adapter.findOne<Account>({
               model: 'account',
               where: [
-                { field: 'accountId', value: telegramUserId },
+                { field: 'accountId', value: String(telegramUserId) },
                 { field: 'providerId', value: 'telegram' },
               ],
             });
