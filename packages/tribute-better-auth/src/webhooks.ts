@@ -23,7 +23,7 @@ export const webhooks =
         async (ctx) => {
           const signature = ctx.headers?.get('Trbt-Signature');
           if (!signature) return ctx.error(401);
-          const isVerified = verifyHmac(tribute.apiKey, JSON.stringify(ctx.body), signature);
+          const isVerified = await verifyHmac(tribute.apiKey, JSON.stringify(ctx.body), signature);
           if (!isVerified) return ctx.error(401);
 
           const { onNewSubscription, onCancelledSubscription, onEvent } = webhooksOptions;
@@ -71,6 +71,8 @@ export const webhooks =
                   status: 'active',
                 },
               });
+            } else {
+              console.log('Account not found');
             }
           } else if (eventName === 'cancelled_subscription') {
             await onCancelledSubscription?.(payload);
