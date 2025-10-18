@@ -3,24 +3,32 @@ import type { Dashboard } from './types/dashboard';
 import type { Subscription, SubscriptionPayload, SubscriptionResponse } from './types/subscription';
 import type { SubscriptionMemberResponse } from './types/subscription-member-response';
 import type { SubscriptionPeriod, SubscriptionPeriodPayload } from './types/subscription-period';
+import { fetchWithCache } from './cache';
 
 export class Tribute {
   private baseUrl = 'https://tribute.tg/api';
   private version = 'v4';
+  private cacheMaxAge: number;
   public token: string;
   public apiKey: string;
 
-  constructor({ token, apiKey }: { token: string; apiKey: string }) {
+  constructor({ token, apiKey, cacheMaxAge }: { token: string; apiKey: string; cacheMaxAge?: number }) {
     this.token = token;
     this.apiKey = apiKey;
+    this.cacheMaxAge = cacheMaxAge ?? 300; // 5 minutes in seconds
   }
 
   private async request<T>(route: string, body?: any, method?: string): Promise<T> {
-    const response = await fetch(`${this.baseUrl}/${this.version}${route}`, {
+    const url = `${this.baseUrl}/${this.version}${route}`;
+    const init: RequestInit = {
       headers: { Authorization: `TgAuth ${this.token}`, 'Api-Key': this.apiKey },
       method: method ?? (body ? 'POST' : 'GET'),
       body: body ? JSON.stringify(body) : undefined,
-    });
+    };
+    const request = new Request(url, init);
+    const response = this.cacheMaxAge
+      ? await fetchWithCache(request, { maxAge: this.cacheMaxAge })
+      : await fetch(request);
     return response.json();
   }
 
