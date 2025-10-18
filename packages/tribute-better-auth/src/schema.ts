@@ -1,5 +1,5 @@
 import { mergeSchema } from 'better-auth/db';
-import type { AuthPluginSchema } from 'better-auth';
+import type { BetterAuthPluginDBSchema } from 'better-auth/db';
 import type { TributeOptions } from './types';
 
 export const subscriptions = {
@@ -51,7 +51,7 @@ export const subscriptions = {
       },
     },
   },
-} satisfies AuthPluginSchema;
+} satisfies BetterAuthPluginDBSchema;
 
 export const user = {
   user: {
@@ -62,7 +62,7 @@ export const user = {
       },
     },
   },
-} satisfies AuthPluginSchema;
+} satisfies BetterAuthPluginDBSchema;
 
 export const getSchema = (options: TributeOptions) => {
   return mergeSchema(
