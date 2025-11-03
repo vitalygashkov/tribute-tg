@@ -1,5 +1,5 @@
 const getCache = async (): Promise<Cache | undefined> => {
-  const hasCaches = 'caches' in globalThis || !!caches;
+  const hasCaches = 'caches' in globalThis;
   if (!hasCaches) return undefined;
   if ('default' in caches) return caches.default as Cache;
   return (await caches.open('default')) as unknown as Cache;
