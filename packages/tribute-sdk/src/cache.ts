@@ -10,13 +10,18 @@ export const fetchWithCache = async (
   { maxAge }: { maxAge: number } = { maxAge: 300 } // 5 minutes in seconds
 ): Promise<Response> => {
   const cache = await getCache();
+  if (!cache) return await fetch(request);
   const cached = await cache?.match(request);
   if (cached) {
     return new Response(cached.body, cached);
   } else {
     const response = await fetch(request);
     const cacheable = new Response(response.body, response);
-    cacheable.headers.append('Cache-Control', `s-maxage=${maxAge}`);
+    try {
+      cacheable.headers.append('Cache-Control', `s-maxage=${maxAge}`);
+    } catch (error) {
+      console.error(error);
+    }
     await cache?.put(request, cacheable.clone());
     return cacheable;
   }
