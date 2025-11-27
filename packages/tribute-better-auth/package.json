@@ -1,14 +1,14 @@
 {
   "name": "@tribute-tg/better-auth",
-  "version": "2.1.7",
+  "version": "2.1.8",
   "description": "Tribute integration for better-auth",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "exports": {
     "import": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
     },
     "require": {
       "types": "./dist/index.d.cts",
@@ -52,7 +52,7 @@
   ],
   "devDependencies": {
     "@sindresorhus/tsconfig": "^8.1.0",
-    "@tribute-tg/sdk": "^0.1.3",
+    "@tribute-tg/sdk": "^0.1.4",
     "@types/node": "^24.10.1",
     "better-auth": "^1.4.3",
     "tsdown": "^0.16.7",
