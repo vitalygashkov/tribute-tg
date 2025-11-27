@@ -53,10 +53,10 @@
     }
   ],
   "devDependencies": {
-    "@sindresorhus/tsconfig": "^8.0.1",
-    "@types/node": "^24.8.1",
-    "tsdown": "^0.15.7",
+    "@sindresorhus/tsconfig": "^8.1.0",
+    "@types/node": "^24.10.1",
+    "tsdown": "^0.16.7",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.14"
   }
 }
