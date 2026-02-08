@@ -15,6 +15,7 @@ export interface WebhookSubscriptionPayload {
   channel_id: number;
   channel_name: string;
   expires_at: string;
+  type: 'regular' | 'gift' | 'trial';
 }
 
 export interface WebhookEvent {
