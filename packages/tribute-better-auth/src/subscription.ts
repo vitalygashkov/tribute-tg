@@ -1,6 +1,5 @@
 import { APIError } from 'better-auth/api';
-import { sessionMiddleware } from 'better-auth/api';
-import { createAuthEndpoint } from 'better-auth/plugins';
+import { sessionMiddleware, createAuthEndpoint } from 'better-auth/api';
 import { z } from 'zod';
 import type { Tribute } from '@tribute-tg/sdk';
 import type { CheckoutSubscription, Subscription, TributeOptions } from './types';
